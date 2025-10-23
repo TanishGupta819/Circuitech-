@@ -3,73 +3,124 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>IoT Dashboard</title>
-
-<!-- Tailwind & Chart.js -->
+<title>Dashboard</title>
 <script src="https://cdn.tailwindcss.com"></script>
-<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-
+<script src="https://cdn.jsdelivr.net/npm/scrollreveal"></script>
+<script src="https://cdn.jsdelivr.net/npm/particles.js"></script>
 <style>
-  /* full-screen background image, lightly visible */
   body {
-    background: url("imagescampus.jpg.jpg") no-repeat center center fixed;
-    background-size: contain;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    color: white;
+    position: relative;
+    overflow-x: hidden;
   }
-  /* subtle dark overlay for readability */
-  body::before {
-    content: '';
+  /* Particle Background */
+  #particles-js {
     position: fixed;
-    top: 0; left: 0; width: 100%; height: 100%;
-    background: rgba(255,255,255,0.4);
-    backdrop-filter: blur(2px);
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(135deg, #0f172a, #1e293b);
+    top: 0;
+    left: 0;
     z-index: -1;
   }
-
-  /* glass effect for chart container */
-  .glass-card {
-    background: rgba(255,255,255,0.8);
-    backdrop-filter: blur(10px);
-    box-shadow: 0 0 20px rgba(0,0,0,0.15);
+  /* Cards */
+  .card {
+    background: rgba(30, 41, 59, 0.85);
+    border: 1px solid rgba(255,255,255,0.1);
+    box-shadow: 0 0 20px rgba(0, 255, 255, 0.2);
+    border-radius: 15px;
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
   }
-
-  /* simple fade-in animation */
-  @keyframes fadeIn {
-    from { opacity: 0; transform: translateY(-10px); }
-    to   { opacity: 1; transform: translateY(0); }
+  .card:hover {
+    transform: translateY(-8px);
+    box-shadow: 0 0 25px rgba(0, 255, 255, 0.5);
   }
-  .fade-in { animation: fadeIn 1.2s ease-out forwards; }
+  iframe {
+    border-radius: 10px;
+    transition: all 0.5s ease;
+  }
+  iframe:hover {
+    transform: scale(1.03);
+    box-shadow: 0 0 20px cyan;
+  }
+  /* Custom Cursor */
+  body {
+    cursor: none;
+  }
+  .cursor {
+    width: 18px;
+    height: 18px;
+    border: 2px solid cyan;
+    border-radius: 50%;
+    position: fixed;
+    pointer-events: none;
+    transform: translate(-50%, -50%);
+    transition: transform 0.1s ease;
+    z-index: 9999;
+    mix-blend-mode: difference;
+  }
+  .cursor::after {
+    content: '';
+    width: 35px;
+    height: 35px;
+    border: 2px solid rgba(0,255,255,0.3);
+    border-radius: 50%;
+    position: absolute;
+    top: -11px;
+    left: -11px;
+    animation: pulse 1.5s infinite;
+  }
+  @keyframes pulse {
+    0% { transform: scale(0.9); opacity: 0.7; }
+    50% { transform: scale(1.2); opacity: 0.3; }
+    100% { transform: scale(0.9); opacity: 0.7; }
+  }
 </style>
 </head>
 
-<body class="min-h-screen flex flex-col">
+<body class="min-h-screen">
+
+  <!-- Particle Background -->
+  <div id="particles-js"></div>
 
   <!-- Navbar -->
-  <nav class="bg-blue-600/90 p-4 flex justify-between items-center shadow-md">
-    <h1 class="text-white text-2xl font-bold tracking-wide">Dashboard</h1>
-    <button onclick="logout()"
-            class="bg-white/90 text-blue-700 px-4 py-2 rounded-lg font-semibold hover:bg-white transition">
-      Logout
-    </button>
+  <nav class="bg-gradient-to-r from-cyan-500 to-blue-600 p-4 flex justify-between items-center shadow-lg relative z-10">
+    <h1 class="text-white text-3xl font-extrabold tracking-wider">⚡Dashboard</h1>
+    <button onclick="logout()" class="bg-white text-blue-600 px-4 py-2 rounded-lg font-bold hover:bg-gray-200 transition">Logout</button>
   </nav>
 
-  <!-- Welcome Section -->
-  <div class="p-6 text-center">
-    <h2 id="welcome"
-        class="text-2xl font-semibold text-blue-900 mb-2 fade-in"></h2>
-    <p class="text-gray-700 fade-in"
-       style="animation-delay:0.3s; animation-fill-mode:forwards;">
-       Live sensor data of our Robot is displayed below.
-    </p>
+  <!-- Welcome -->
+  <div class="p-6 text-center relative z-10">
+    <h2 id="welcome" class="text-2xl font-semibold mb-2 animate-pulse"></h2>
+    <span class="text-cyan-400 font-semibold">Real-time IoT data</span>
   </div>
 
-  <!-- Chart Container -->
-  <div class="max-w-4xl mx-auto glass-card rounded-xl p-6 fade-in"
-       style="animation-delay:0.6s; animation-fill-mode:forwards;">
-    <canvas id="dataChart" height="120"></canvas>
+  <!-- Charts -->
+  <div class="grid grid-cols-1 md:grid-cols-2 gap-6 px-6 pb-12 relative z-10">
+    <div class="card p-4" data-sr>
+      <h3 class="text-center text-lg font-bold mb-3 text-cyan-400">🌡 Temperature</h3>
+      <iframe width="100%" height="260" src="https://thingspeak.com/channels/3095596/charts/1?bgcolor=%231e293b&color=cyan&dynamic=true&type=line&yaxis=temp"></iframe>
+    </div>
+    <div class="card p-4" data-sr>
+      <h3 class="text-center text-lg font-bold mb-3 text-green-400">💧 Humidity</h3>
+      <iframe width="100%" height="260" src="https://thingspeak.com/channels/3095596/charts/2?bgcolor=%231e293b&color=lime&dynamic=true&type=line&yaxis=humidity"></iframe>
+    </div>
+    <div class="card p-4" data-sr>
+      <h3 class="text-center text-lg font-bold mb-3 text-pink-400">📏 Obstacle Distance</h3>
+      <iframe width="100%" height="260" src="https://thingspeak.com/channels/3095596/charts/3?bgcolor=%231e293b&color=magenta&dynamic=true&type=line&yaxis=distance"></iframe>
+    </div>
+    <div class="card p-4" data-sr>
+      <h3 class="text-center text-lg font-bold mb-3 text-yellow-400">📍 Location</h3>
+      <iframe width="100%" height="260" src="https://thingspeak.com/channels/3095596/charts/4?bgcolor=%231e293b&color=yellow&dynamic=true&type=line&yaxis=location"></iframe>
+    </div>
   </div>
+
+  <!-- Custom Cursor -->
+  <div class="cursor" id="cursor"></div>
 
 <script>
-  // --- Login check ---
+  // Welcome user
   const email = sessionStorage.getItem('userEmail');
   if(!email){
     window.location.href = 'index.html';
@@ -82,58 +133,33 @@
     window.location.href = 'index.html';
   }
 
-  // --- ThingSpeak data fetch ---
-  const channelID = '3081280';        // replace with your channel ID
-  const readAPIKey = 'YOUR_READ_API_KEY';     // optional if channel is public
-  const field = 1; // Field number to display
+  // Scroll Reveal Animations
+  ScrollReveal().reveal('[data-sr]', {
+    duration: 1200,
+    distance: '40px',
+    origin: 'bottom',
+    reset: true,
+    easing: 'ease-in-out'
+  });
 
-  async function fetchData(){
-    try {
-      const url = `https://api.thingspeak.com/channels/${channelID}/fields/${field}.json?results=20&api_key=${readAPIKey}`;
-      const response = await fetch(url);
-      const data = await response.json();
-      const feeds = data.feeds;
-
-      const labels = feeds.map(f => new Date(f.created_at).toLocaleTimeString());
-      const values = feeds.map(f => parseFloat(f[`field${field}`]));
-
-      updateChart(labels, values);
-    } catch(err){
-      console.error('Error fetching data:', err);
-    }
-  }
-
-  let chart;
-  function updateChart(labels, values){
-    if(chart) chart.destroy();
-    const ctx = document.getElementById('dataChart').getContext('2d');
-    chart = new Chart(ctx, {
-      type: 'line',
-      data: {
-        labels: labels,
-        datasets: [{
-          label: 'Sensor Data',
-          data: values,
-          borderColor: 'rgba(37,99,235,0.9)',
-          backgroundColor: 'rgba(37,99,235,0.25)',
-          borderWidth: 2,
-          fill: true,
-          pointRadius: 3,
-          tension: 0.3   // smoother curve
-        }]
-      },
-      options: {
-        responsive: true,
-        scales: {
-          y: { beginAtZero: false },
-          x: { ticks: { maxRotation: 90, minRotation: 45 } }
-        }
+  // Particles Background
+  particlesJS("particles-js", {
+    "particles": {
+      "number": { "value": 100 },
+      "color": { "value": "#00ffff" },
+      "shape": { "type": "circle" },
+      "opacity": { "value": 0.6 },
+      "size": { "value": 3 },
+      "line_linked": { "enable": true, "distance": 150, "color": "#00ffff", "opacity": 0.4, "width": 1 },
+      "move": { "enable": true, "speed": 2 }
+    },
+    "interactivity": {
+      "events": {
+        "onhover": { "enable": true, "mode": "repulse" }
       }
-    });
-  }
-
-  fetchData();
-  setInterval(fetchData, 20000); // refresh every 20 seconds
+    },
+    "retina_detect": true
+  });
 </script>
 </body>
 </html>
